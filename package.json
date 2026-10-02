@@ -1,0 +1,16 @@
+{
+  "name": "aw-cloud-sessions",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Agent Wrangler extension: a Cloud runtime that hands a dispatched card to a Claude Code cloud session.",
+  "wranglerExtension": {
+    "id": "cloud",
+    "label": "Cloud sessions",
+    "description": "Adds a Cloud runtime to the dispatch dialog: the card's task runs in a Claude Code cloud session, and the card links to it.",
+    "requires": ["links:write", "board:rebuild", "sessions:read"]
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}
