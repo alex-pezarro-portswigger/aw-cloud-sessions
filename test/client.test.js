@@ -66,16 +66,16 @@ test('shown only for Cloud; fields and ext are empty otherwise', () => {
   assert.equal(host.hidden, true, 'hidden until the first update says Cloud');
   c.update(host, ctx(undefined));
   assert.equal(host.hidden, true);
-  assert.deepEqual(c.fields(host), {});
-  assert.equal(c.ext(host), undefined);
+  assert.deepEqual(c.fields(host, ctx(undefined)), {});
+  assert.equal(c.ext(host, ctx(undefined)), undefined);
   c.update(host, ctx('cloud'));
   assert.equal(host.hidden, false);
-  assert.deepEqual(c.fields(host), { worktree: false });
-  assert.deepEqual(c.ext(host), { environmentId: '', ref: '' });
+  assert.deepEqual(c.fields(host, ctx('cloud')), { worktree: false });
+  assert.deepEqual(c.ext(host, ctx('cloud')), { environmentId: '', ref: '' });
   c.update(host, ctx('devcontainer'));
   assert.equal(host.hidden, true);
-  assert.deepEqual(c.fields(host), {});
-  assert.equal(c.ext(host), undefined);
+  assert.deepEqual(c.fields(host, ctx('devcontainer')), {});
+  assert.equal(c.ext(host, ctx('devcontainer')), undefined);
 });
 
 test('options: Account default, the valid configured items, and the default preselected', () => {
@@ -95,7 +95,7 @@ test('a pick survives later updates; the explicit Account default is sent as an 
   assert.equal(select.value, 'env_a');
   select.value = '';
   c.update(host, ctx('cloud'));
-  assert.deepEqual(c.ext(host), { environmentId: '', ref: '' });
+  assert.deepEqual(c.ext(host, ctx('cloud')), { environmentId: '', ref: '' });
 });
 
 test('the ref row shows only for a self-hosted pool, and ext carries the trimmed ref', () => {
@@ -106,7 +106,7 @@ test('the ref row shows only for a self-hosted pool, and ext carries the trimmed
   select.dispatch('change');
   assert.equal(refRow.hidden, false);
   ref.value = '  feature/x ';
-  assert.deepEqual(c.ext(host), { environmentId: 'ccpool_b', ref: 'feature/x' });
+  assert.deepEqual(c.ext(host, ctx('cloud')), { environmentId: 'ccpool_b', ref: 'feature/x' });
 });
 
 test('environmentOptions adds a default that is not in the list, and skips a bad one', () => {
@@ -119,8 +119,7 @@ test('unmount clears state so a stale element is never read', () => {
   const { c, host } = mounted();
   c.update(host, ctx('cloud'));
   c.unmount(host);
-  assert.deepEqual(c.fields(host), {});
-  assert.equal(c.ext(host), undefined);
+  assert.equal(c.ext(host, ctx('cloud')), undefined);
 });
 
 test('chip: a created link links to claude.ai with a safe icon', () => {

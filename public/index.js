@@ -38,13 +38,11 @@ function row(labelText, control) {
 
 export function createDispatchField() {
   // One contribution at one anchor, so one element: plain closure state is
-  // enough. `active` is the last ctx's answer to "is Cloud selected?", since
-  // fields(el) and ext(el) aren't handed the ctx.
+  // enough.
   let api = null;
   let select = null;
   let ref = null;
   let refRow = null;
-  let active = false;
   let populated = false;
 
   // --ref only means anything on the self-hosted (ccpool_) form.
@@ -77,8 +75,7 @@ export function createDispatchField() {
     // pick while it is still offered; otherwise (and on first fill) preselects
     // the defaultEnvironment setting.
     update(el, ctx) {
-      active = isCloud(ctx?.draft);
-      el.hidden = !active;
+      el.hidden = !isCloud(ctx?.draft);
       if (!select) return;
       const settings = (typeof api?.settings === 'function' ? api.settings() : null) || {};
       const opts = environmentOptions(settings);
@@ -98,14 +95,14 @@ export function createDispatchField() {
 
     // Hiding the worktree box is presentation only, so the payload has to say
     // `worktree: false` itself, or the hidden checkbox's value would be sent.
-    fields() {
-      return active ? { worktree: false } : {};
+    fields(el, ctx) {
+      return isCloud(ctx?.draft) ? { worktree: false } : {};
     },
 
     // This extension's own slice of the dispatch bag, read by the runtime's
     // preflight and buildLaunch. An explicit '' means "Account default".
-    ext() {
-      if (!active || !select) return undefined;
+    ext(el, ctx) {
+      if (!isCloud(ctx?.draft) || !select) return undefined;
       return { environmentId: select.value || '', ref: (ref?.value || '').trim() };
     },
 
@@ -114,7 +111,6 @@ export function createDispatchField() {
       select = null;
       ref = null;
       refRow = null;
-      active = false;
       populated = false;
     },
   };

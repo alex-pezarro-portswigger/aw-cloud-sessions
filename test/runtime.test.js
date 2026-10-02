@@ -95,7 +95,7 @@ test('deliver: the store id is used and the result is narrowed to the contract s
 test('deliver: falls back to the card link, and a failure keeps only ok and error', async () => {
   const rt = createCloudRuntime({ sendImpl: async ({ cloudSessionId }) => ({ ok: false, error: `nope ${cloudSessionId}`, archived: false }) });
   const host = { stores: { [STORE]: memStore() } };
-  const res = await rt.deliver({ entry: { links: [{ type: 'cloud', key: 'session_L' }] }, to: 's-2', text: 'x', host });
+  const res = await rt.deliver({ entry: { sessionId: 's-2', links: [{ type: 'cloud', key: 'session_L' }] }, text: 'x', host });
   assert.deepEqual(res, { ok: false, error: 'nope session_L' });
 });
 
