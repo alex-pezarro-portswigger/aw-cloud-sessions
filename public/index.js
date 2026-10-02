@@ -18,12 +18,13 @@ export function environmentOptions(settings) {
 }
 
 // The ☁ chip for a `cloud` link: a link to the session on claude.ai, or the
-// failure marker the launch-watch sweep attaches when the create failed.
+// failure marker the launch-watch sweep attaches when the create failed. The
+// icon is the ☁, so the label leaves it out (core draws icon then label).
 export function chip(link) {
   if (link?.type !== 'cloud') return null;
-  if (link.key === 'failed') return { label: '☁ failed', icon: CLOUD_ICON };
+  if (link.key === 'failed') return { label: 'failed', icon: CLOUD_ICON };
   const href = typeof link.url === 'string' && link.url.startsWith('https://claude.ai/') ? link.url : '';
-  return { label: '☁ cloud', href, icon: CLOUD_ICON };
+  return { label: 'cloud', href, icon: CLOUD_ICON };
 }
 
 function row(labelText, control) {

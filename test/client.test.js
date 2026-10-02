@@ -124,13 +124,13 @@ test('unmount clears state so a stale element is never read', () => {
 
 test('chip: a created link links to claude.ai with a safe icon', () => {
   const got = chip({ type: 'cloud', key: 'session_01AB', url: 'https://claude.ai/code/session_01AB' });
-  assert.equal(got.label, '☁ cloud');
+  assert.equal(got.label, 'cloud'); // the icon is the cloud; a ☁ in the label too drew two
   assert.equal(got.href, 'https://claude.ai/code/session_01AB');
   assert.match(got.icon, SAFE_ICON_RE);
 });
 
 test('chip: failed marker, key-only link, a non-claude url, and other types', () => {
-  assert.equal(chip({ type: 'cloud', key: 'failed' }).label, '☁ failed');
+  assert.equal(chip({ type: 'cloud', key: 'failed' }).label, 'failed');
   assert.equal(chip({ type: 'cloud', key: 'failed' }).href, undefined);
   assert.deepEqual(chip({ type: 'cloud', key: 'session_X' }).href, '');
   assert.equal(chip({ type: 'cloud', key: 'session_X', url: 'https://evil.example/' }).href, '');
