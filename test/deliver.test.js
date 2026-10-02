@@ -118,6 +118,13 @@ test('resolveCloudSessionId: store first, then the entry\'s cloud link, then hos
   assert.equal(resolveCloudSessionId({ entry: { sessionId: 's-3' }, store, host }), 'session_LINK');
 });
 
+test('resolveCloudSessionId: an explicit sessionId covers a raw entry without its own key', () => {
+  const store = { get: (sid) => (sid === 's-9' ? { cloudSessionId: 'session_NINE' } : null) };
+  assert.equal(resolveCloudSessionId({ entry: { runtime: 'cloud' }, sessionId: 's-9', store }), 'session_NINE');
+  // No id at all still finds the link on the raw entry.
+  assert.equal(resolveCloudSessionId({ entry: { links: [{ type: 'cloud', key: 'session_L' }] }, store }), 'session_L');
+});
+
 test('resolveCloudSessionId: a failed marker link or nothing at all is null', () => {
   const store = { get: () => null };
   assert.equal(resolveCloudSessionId({ entry: { sessionId: 's-1', links: [{ type: 'cloud', key: 'failed' }] }, store }), null);
