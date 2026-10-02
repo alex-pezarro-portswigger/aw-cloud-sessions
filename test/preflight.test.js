@@ -187,6 +187,25 @@ test('cloudPreflight: an https GitHub origin is accepted', async () => {
   assert.deepEqual(r.refusals, []);
 });
 
+test('cloudPreflight: a github.com origin rewritten by insteadOf to an SSH alias is accepted', async () => {
+  // `git remote get-url` returns the rewritten URL; the configured one still names GitHub.
+  const r = await pf({ run: fakeRun({
+    ...CLEAN,
+    'config --get remote.origin.url': 'git@github.com:acme/widgets.git\n',
+    'remote get-url origin': 'git@github-personal:acme/widgets.git\n',
+  }) });
+  assert.deepEqual(r.refusals, []);
+});
+
+test('cloudPreflight: a non-GitHub configured origin falls back to the rewritten URL', async () => {
+  const r = await pf({ run: fakeRun({
+    ...CLEAN,
+    'config --get remote.origin.url': 'git@gh-mirror:acme/widgets.git\n',
+    'remote get-url origin': 'git@github.com:acme/widgets.git\n',
+  }) });
+  assert.deepEqual(r.refusals, []);
+});
+
 test('cloudPreflight: unpushed commits are refused, with the count in the message', async () => {
   const r = await pf({ run: fakeRun({ ...CLEAN, 'rev-list --count @{u}..HEAD': '3\n' }) });
   assert.deepEqual(codes(r.refusals), ['cloud-unpushed']);
