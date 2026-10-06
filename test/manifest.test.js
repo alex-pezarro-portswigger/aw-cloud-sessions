@@ -24,7 +24,7 @@ test('no dependencies, so no lockfile is needed', () => {
 });
 
 test('engines, defaults, veto disclosure and client path', () => {
-  assert.equal(manifest.engines.wranglerApi, '^1.19.0');
+  assert.equal(manifest.engines.wranglerApi, '^1.21.0');
   assert.equal(manifest.defaultEnabled, true);
   assert.deepEqual(manifest.hideDispatchField, ['worktree']);
   assert.equal(manifest.dir, dir);
@@ -42,6 +42,11 @@ test('settings: a list of environments and a patterned default', () => {
   assert.ok(re.test('ccpool_9z'));
   assert.ok(!re.test('prod'));
   assert.ok(!re.test('env_'));
+  const item = new RegExp(`^(?:${byKey.environments.pattern})$`);
+  assert.ok(item.test('env_01abc'));
+  assert.ok(item.test('ccpool_01ab CI runners'));
+  assert.ok(!item.test('prod'));
+  assert.ok(!item.test('env_01abc '));
   for (const s of manifest.settings) {
     assert.match(s.key, /^[a-z][a-zA-Z0-9]*$/);
     assert.ok(s.label);

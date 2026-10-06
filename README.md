@@ -5,7 +5,7 @@ that adds a **☁ Cloud** runtime to the dispatch dialog. Dispatching a card wit
 Claude Code cloud session instead of running Claude on your machine. The card then links to the session
 on claude.ai, and other sessions can send it peer messages.
 
-Needs Agent Wrangler host API `^1.19.0` (extension-contributed runtimes and `links:write`). An older
+Needs Agent Wrangler host API `^1.21.0` (extension-contributed runtimes, `links:write`, and per-item list patterns). An older
 wrangler won't load it.
 
 ## Install
@@ -61,7 +61,7 @@ combination can quietly run the prompt locally while the card says it's in the c
 
 | Setting | What it does |
 | --- | --- |
-| **Environments** (list) | The environments the dialog offers. Each item is an `env_…` or `ccpool_…` id, optionally followed by a space and a label, e.g. `ccpool_01ab CI runners`. Invalid items are skipped. If the list has any valid items, a dispatch that names an environment not on it (or not the default) is refused. |
+| **Environments** (list) | The environments the dialog offers. Each item is an `env_…` or `ccpool_…` id, optionally followed by a space and a label, e.g. `ccpool_01ab CI runners`. Items that are not are refused when you add them. If the list has any valid items, a dispatch that names an environment not on it (or not the default) is refused. |
 | **Default environment** (text) | Preselected in the dialog and used by `spawn_session`. Empty uses your account's default environment. |
 
 Settings → Extensions only shows a count for list settings. Until it can edit them, set the list in the
