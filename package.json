@@ -8,9 +8,17 @@
     "id": "cloud",
     "label": "Cloud sessions",
     "description": "Adds a Cloud runtime to the dispatch dialog: the card's task runs in a Claude Code cloud session, and the card links to it.",
-    "requires": ["links:write", "board:rebuild", "sessions:read"]
+    "requires": [
+      "links:write",
+      "board:rebuild",
+      "sessions:read"
+    ]
   },
   "scripts": {
     "test": "node --test"
-  }
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
 }
