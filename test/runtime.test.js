@@ -13,7 +13,7 @@ test('runtime shape: id, label, not resumable, no readLive, no wrapLaunch', () =
   assert.equal(rt.skipsHostResumeGuard, false);
   assert.equal(rt.readLive, undefined);
   assert.equal(rt.wrapLaunch, undefined);
-  for (const k of ['buildLaunch', 'preflight', 'deliver', 'analyze']) assert.equal(typeof rt[k], 'function', k);
+  for (const k of ['buildLaunch', 'preflight', 'deliver', 'analyze', 'launchStatus']) assert.equal(typeof rt[k], 'function', k);
 });
 
 test('analyze returns the truthy empty-analysis object, never null', async () => {
@@ -104,4 +104,45 @@ test('deliver: no id anywhere is the real "try again" failure', async () => {
   const res = await rt.deliver({ entry: { sessionId: 's-1' }, text: 'x', host: { stores: { [STORE]: memStore() } } });
   assert.equal(res.ok, false);
   assert.match(res.error, /try again once the card shows its ☁ link/);
+});
+
+test('launchStatus answers from a settled record', async () => {
+  const records = {
+    a: { status: 'created', url: 'https://claude.ai/code/session_a' },
+    b: { status: 'created' },
+    c: { status: 'failed', error: 'no GitHub remote was detected' },
+    d: { status: 'failed' },
+    e: { status: 'unknown' },
+  };
+  const rt = createCloudRuntime({ readLogImpl: () => { throw new Error('a settled record must not read the log'); } });
+  const host = { stores: { [STORE]: memStore(records) } };
+  const ask = (id) => rt.launchStatus({ entry: { sessionId: id }, host });
+  assert.deepEqual(await ask('a'), { state: 'ok', url: 'https://claude.ai/code/session_a' });
+  assert.deepEqual(await ask('b'), { state: 'ok' });
+  assert.deepEqual(await ask('c'), { state: 'failed', error: 'no GitHub remote was detected' });
+  assert.deepEqual(await ask('d'), { state: 'failed', error: 'Creating the cloud session failed.' });
+  assert.deepEqual(await ask('e'), { state: 'unknown' });
+});
+
+test('launchStatus reads a pending card\'s log without waiting for the sweep', async () => {
+  const logs = {
+    ok: '{"ok":true,"session_id":"session_01X","url":"https://claude.ai/code/session_01X"}\r\n',
+    bad: '{"ok":false,"error":"no GitHub remote was detected"}\n',
+    early: '',
+  };
+  const records = { ok: { status: 'pending' }, bad: { status: 'pending' }, early: { status: 'pending' } };
+  const rt = createCloudRuntime({ readLogImpl: async (id) => logs[id] });
+  const host = { stores: { [STORE]: memStore(records) } };
+  const ask = (id) => rt.launchStatus({ entry: { sessionId: id }, host });
+  assert.deepEqual(await ask('ok'), { state: 'ok', url: 'https://claude.ai/code/session_01X' });
+  assert.deepEqual(await ask('bad'), { state: 'failed', error: 'no GitHub remote was detected' });
+  assert.deepEqual(await ask('early'), { state: 'pending' });
+  assert.deepEqual(records.bad, { status: 'pending' }, 'the record is left for the sweep');
+});
+
+test('launchStatus is null for a card the extension has no record of', async () => {
+  const rt = createCloudRuntime();
+  assert.equal(await rt.launchStatus({ entry: { sessionId: 'zz' }, host: { stores: { [STORE]: memStore() } } }), null);
+  assert.equal(await rt.launchStatus({ entry: {}, host: { stores: { [STORE]: memStore() } } }), null);
+  assert.equal(await rt.launchStatus({ entry: { sessionId: 'zz' }, host: {} }), null);
 });

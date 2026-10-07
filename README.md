@@ -46,6 +46,12 @@ auto-archived. Archive the card to close the pane.
 `spawn_session` with `runtime: "cloud"` has no dialog, so it uses the **Default environment** setting
 and no ref.
 
+On wrangler host API 1.22.0 or later, `spawn_session` waits up to 15 s for the create's outcome. If the
+CLI reports an error, the tool returns that error, along with the new card's id, instead of a success.
+Otherwise the result carries `launch: { state: "ok", url }`, or `"pending"` if the create is still going.
+`list_sessions` reports the same `launch` on every cloud card. Pass `wait: false` to skip the wait. On
+an older wrangler the extension still loads, but `spawn_session` can't report a failed create.
+
 ### Launch forms
 
 | Environment | Command |
