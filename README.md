@@ -5,8 +5,8 @@ that adds a **☁ Cloud** runtime to the dispatch dialog's *Advanced options*. A
 dispatched with it runs in a Claude Code cloud session instead of on your machine, and
 links to that session on claude.ai.
 
-Requires an Agent Wrangler server serving host API **^1.19.0** (extension-contributed
-runtimes and `links:write`). An older server refuses to load it. On **1.22.0** or later,
+Requires an Agent Wrangler server serving host API **^1.21.0** (extension-contributed
+runtimes, `links:write` and per-item list patterns). An older server refuses to load it. On **1.22.0** or later,
 `spawn_session` also reports a failed create.
 
 You also need a `claude` CLI on the wrangler's `PATH`, signed in with subscription (OAuth)

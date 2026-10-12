@@ -38,7 +38,8 @@ export default {
   // 1.19.0: the `runtimes` contribution, `links:write`, the `worktree` dispatch
   // field and the function form of `hides`. An older server ignores `runtimes`,
   // so only the range can say this won't work there.
-  engines: { wranglerApi: '^1.19.0' },
+  // 1.21.0: a list setting's per-item `pattern`.
+  engines: { wranglerApi: '^1.21.0' },
   // The disclosure half of the dispatch-field veto: the worktree box is hidden
   // while Cloud is selected (the contribution's `hides` decides when).
   hideDispatchField: ['worktree'],
@@ -47,8 +48,9 @@ export default {
       key: 'environments',
       type: 'list',
       label: 'Environments',
-      help: 'The cloud environments the dispatch dialog offers. One per item: an env_… (Anthropic-hosted) or ccpool_… (self-hosted runner pool) id, optionally followed by a space and a label, e.g. "ccpool_01ab CI runners". Invalid items are skipped. When the list has valid items, a dispatch naming any other environment is refused.',
+      help: 'The cloud environments the dispatch dialog offers. One per item: an env_… (Anthropic-hosted) or ccpool_… (self-hosted runner pool) id, optionally followed by a space and a label, e.g. "ccpool_01ab CI runners". When the list has valid items, a dispatch naming any other environment is refused.',
       maxItems: 50,
+      pattern: '(env_|ccpool_)[A-Za-z0-9_-]+( .+)?',
     },
     {
       key: 'defaultEnvironment',
