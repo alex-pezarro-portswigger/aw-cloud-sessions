@@ -27,6 +27,13 @@ export function chip(link) {
   return { label: 'cloud', href, icon: CLOUD_ICON };
 }
 
+// `hidden` alone loses to any host CSS that sets `display` on the slot, so the
+// inline style says it too.
+function setShown(el, shown) {
+  el.hidden = !shown;
+  if (el.style) el.style.display = shown ? '' : 'none';
+}
+
 function row(labelText, control) {
   const wrap = document.createElement('div');
   wrap.className = 'dispatch-field';
@@ -67,7 +74,7 @@ export function createDispatchField() {
       refRow = row('Cloud ref', ref);
       select.addEventListener('change', syncRef);
       el.append(row('Cloud environment', select), refRow);
-      el.hidden = true;
+      setShown(el, false);
       populated = false;
     },
 
@@ -76,7 +83,7 @@ export function createDispatchField() {
     // pick while it is still offered; otherwise (and on first fill) preselects
     // the defaultEnvironment setting.
     update(el, ctx) {
-      el.hidden = !isCloud(ctx?.draft);
+      setShown(el, isCloud(ctx?.draft));
       if (!select) return;
       const settings = (typeof api?.settings === 'function' ? api.settings() : null) || {};
       const opts = environmentOptions(settings);
